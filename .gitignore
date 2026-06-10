@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.local
+.DS_Store
+.vercel
+
+# Large binary source kept out of the repo; the parsed JSON in src/data/seed is the artifact
+program-source/*.pdf
+
+# TS build info
+*.tsbuildinfo

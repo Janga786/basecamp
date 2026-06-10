@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-ink-950 text-slate-100 antialiased;
+  margin: 0;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Light theme surface overrides */
+html:not(.dark) body {
+  @apply bg-slate-100 text-slate-900;
+}
+
+/* Themeable semantic surfaces via utility classes */
+.surface {
+  @apply bg-ink-900 border border-ink-700;
+}
+html:not(.dark) .surface {
+  @apply bg-white border-slate-200;
+}
+
+.surface-2 {
+  @apply bg-ink-850;
+}
+html:not(.dark) .surface-2 {
+  @apply bg-slate-50;
+}
+
+.text-muted {
+  @apply text-slate-400;
+}
+html:not(.dark) .text-muted {
+  @apply text-slate-500;
+}
+
+.hairline {
+  @apply border-ink-700;
+}
+html:not(.dark) .hairline {
+  @apply border-slate-200;
+}
+
+/* Hide scrollbars on horizontal scrollers but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Disable text selection on tappable chrome */
+button,
+.tap {
+  user-select: none;
+}
