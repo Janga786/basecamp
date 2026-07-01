@@ -6,6 +6,7 @@ dist-ssr
 .env.local
 .DS_Store
 .vercel
+.Rhistory
 
 # Large binary source kept out of the repo; the parsed JSON in src/data/seed is the artifact
 program-source/*.pdf

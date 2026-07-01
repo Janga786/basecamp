@@ -23,6 +23,7 @@ Other scripts:
 npm run build        # typecheck + production build to dist/
 npm run preview      # serve the production build
 npm run lint         # typecheck only
+npm test             # unit tests (vitest)
 ```
 
 ---
