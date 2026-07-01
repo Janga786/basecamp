@@ -30,8 +30,8 @@ const SCOPES = [
 ]
 
 const LS_TOKENS = 'basecamp.fitbit.tokens'
-const SS_VERIFIER = 'basecamp.fitbit.pkceVerifier'
-const SS_STATE = 'basecamp.fitbit.oauthState'
+const LS_VERIFIER = 'basecamp.fitbit.pkceVerifier'
+const LS_STATE = 'basecamp.fitbit.oauthState'
 const DEBUG = (() => {
   try {
     return localStorage.getItem('basecamp.fitbit.debug') === '1'
@@ -120,8 +120,8 @@ export async function beginFitbitAuth(): Promise<void> {
   const verifier = randomString()
   const challenge = base64url(await sha256(verifier))
   const state = randomString(16)
-  sessionStorage.setItem(SS_VERIFIER, verifier)
-  sessionStorage.setItem(SS_STATE, state)
+  localStorage.setItem(LS_VERIFIER, verifier)
+  localStorage.setItem(LS_STATE, state)
 
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
@@ -140,10 +140,10 @@ export async function beginFitbitAuth(): Promise<void> {
 
 /** Complete the OAuth flow from the callback URL's ?code & ?state. */
 export async function completeFitbitAuth(code: string, state: string | null): Promise<void> {
-  const verifier = sessionStorage.getItem(SS_VERIFIER)
-  const expectedState = sessionStorage.getItem(SS_STATE)
-  sessionStorage.removeItem(SS_VERIFIER)
-  sessionStorage.removeItem(SS_STATE)
+  const verifier = localStorage.getItem(LS_VERIFIER)
+  const expectedState = localStorage.getItem(LS_STATE)
+  localStorage.removeItem(LS_VERIFIER)
+  localStorage.removeItem(LS_STATE)
   if (!verifier) throw new Error('Missing PKCE verifier — please start the connection again.')
   if (expectedState && state && expectedState !== state) throw new Error('OAuth state mismatch — aborting.')
 
@@ -230,9 +230,9 @@ export function getFitbitDiagnostics(): DiagEntry[] {
   return [...lastDiag]
 }
 
-function civil(date: string): { year: number; month: number; day: number } {
+function civil(date: string): { date: { year: number; month: number; day: number } } {
   const [year, month, day] = date.split('-').map(Number)
-  return { year, month, day }
+  return { date: { year, month, day } }
 }
 function nextDay(date: string): string {
   const [y, m, d] = date.split('-').map(Number)
@@ -288,8 +288,21 @@ async function dailyRollUp(dataType: string, date: string, token: string, diags:
 }
 
 /** GET :list for one day via a civil-time filter; returns the dataPoints array. */
-async function listDay(dataType: string, filterId: string, date: string, token: string, diags: DiagEntry[]): Promise<Record<string, unknown>[]> {
-  const filter = `${filterId}.interval.civil_start_time >= "${date}T00:00:00" and ${filterId}.interval.civil_start_time < "${nextDay(date)}T00:00:00"`
+async function listDay(
+  dataType: string,
+  filterId: string,
+  date: string,
+  token: string,
+  diags: DiagEntry[],
+  filterMode: 'civil_start_time' | 'civil_end_time' | 'date' = 'civil_start_time',
+): Promise<Record<string, unknown>[]> {
+  const nd = nextDay(date)
+  const filter =
+    filterMode === 'date'
+      ? `${filterId}.date >= "${date}" AND ${filterId}.date < "${nd}"`
+      : filterMode === 'civil_end_time'
+        ? `${filterId}.interval.civil_end_time >= "${date}T00:00:00" AND ${filterId}.interval.civil_end_time < "${nd}T23:59:59"`
+        : `${filterId}.interval.civil_start_time >= "${date}T00:00:00" AND ${filterId}.interval.civil_start_time < "${nd}T00:00:00"`
   const url = `${API}/users/me/dataTypes/${dataType}/dataPoints?pageSize=100&filter=${encodeURIComponent(filter)}`
   const diag: DiagEntry = { dataType, method: 'list', status: 0, ok: false }
   diags.push(diag)
@@ -366,12 +379,13 @@ export async function fetchFitbitDay(date: string): Promise<FitbitDay> {
     dailyRollUp('total-calories', date, token, diags),
     dailyRollUp('weight', date, token, diags),
     dailyRollUp('nutrition-log', date, token, diags),
-    listDay('daily-resting-heart-rate', 'daily_resting_heart_rate', date, token, diags),
-    listDay('sleep', 'sleep', date, token, diags),
+    listDay('daily-resting-heart-rate', 'daily_resting_heart_rate', date, token, diags, 'date'),
+    listDay('sleep', 'sleep', date, token, diags, 'civil_end_time'),
   ])
   lastDiag = diags
 
-  const weightKg = pickNumber(weight, ['kgAvg', 'kg_avg', 'kg', 'kgSum'])
+  const weightGrams = pickNumber(weight, ['weightGramsAvg', 'weightGrams', 'weight_grams_avg'])
+  const weightKg = weightGrams != null ? weightGrams / 1000 : null
   const rhr = rhrPoints.length ? (rhrPoints[rhrPoints.length - 1][unionKey('daily-resting-heart-rate')] as Record<string, unknown>) : null
 
   return {

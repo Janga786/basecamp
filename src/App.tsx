@@ -41,6 +41,7 @@ function FitbitCallback() {
       setError('No authorization code returned from Fitbit.')
       return
     }
+    window.history.replaceState(null, '', FITBIT_REDIRECT_PATH)
     completeFitbitAuth(code, params.get('state'))
       .then(() => {
         refresh()
