@@ -4,7 +4,7 @@
 -- Design note: Basecamp stores only MUTABLE user state in the database
 -- (profile, daily logs, weekly check-ins). The training programs, habit
 -- definitions, warm-up protocol, and weekly-template defaults are STATIC
--- content bundled into the app (parsed from program2.pdf), so they are not
+-- content bundled into the app (bundled seed data), so they are not
 -- duplicated here. Each row is a small JSONB document keyed to the signed-in
 -- user, protected by Row Level Security tied to auth.uid().
 

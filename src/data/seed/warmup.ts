@@ -33,5 +33,4 @@ export const WARMUP_PYRAMID: Record<string, string[]> = {
 export const PROGRAM_NOTES: string[] = [
   'This is a generic sample program. Replace it with your own.',
   'Warm up before every workout (5–10 min).',
-  'Week 1 and Week 6 are lighter (deload) weeks.',
 ]
