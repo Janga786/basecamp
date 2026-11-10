@@ -15,7 +15,7 @@ export default defineConfig({
       manifest: {
         name: 'Basecamp',
         short_name: 'Basecamp',
-        description: 'Your daily command center for lifting, basketball, and longevity habits.',
+        description: 'Your daily command center for lifting and longevity habits.',
         theme_color: '#0b0f14',
         background_color: '#0b0f14',
         display: 'standalone',

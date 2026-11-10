@@ -1,8 +1,8 @@
-# Basecamp 🏔️
+# Basecamp
 
-Your daily command center for **lifting, basketball, and longevity habits** — a mobile-first PWA that tells you what to do each day, lets you check it off, and shows clean streaks. It's the conductor; **Hevy and MyNetDiary stay the instruments**. Basecamp never stores macro grams or set-by-set weights — it orchestrates and confirms, then deep-links you out to those apps.
+A personal, mobile-first PWA for daily training and health habits: it shows the day's workout and habits, logs sets and daily metrics, and tracks streaks. Nutrition logging stays in MyNetDiary, which the app links out to.
 
-Built with React + Vite + TypeScript, Tailwind, TanStack Query, date-fns, and a swappable data layer (localStorage **or** Supabase + Google auth).
+Built with React + Vite + TypeScript, Tailwind, TanStack Query, and date-fns, with a swappable data layer (browser localStorage or Supabase + Google sign-in) and optional Fitbit data sync through the Google Health API. 37 unit tests (Vitest). Personal side project, not coursework.
 
 ---
 
@@ -23,7 +23,7 @@ Other scripts:
 npm run build        # typecheck + production build to dist/
 npm run preview      # serve the production build
 npm run lint         # typecheck only
-npm test             # unit tests (vitest)
+npm test             # 37 unit tests (vitest)
 ```
 
 ---
@@ -35,7 +35,7 @@ Basecamp talks to a single `DataProvider` interface (`src/data/provider.ts`). On
 | `VITE_DATA_BACKEND` | Storage | Sync | Survives cache clear |
 | --- | --- | --- | --- |
 | `local` (default) | browser localStorage | no | no |
-| `supabase` | Postgres + Google auth | ✅ across devices | ✅ |
+| `supabase` | Postgres + Google auth | yes, across devices | yes |
 
 ### Turning on Supabase (≈15 min, one time)
 
@@ -55,7 +55,7 @@ Basecamp talks to a single `DataProvider` interface (`src/data/provider.ts`). On
    (Both under Supabase → *Project Settings → API*.)
 5. Restart `npm run dev`. The login screen now shows **Continue with Google**, and your data is tied to your Google account and follows you between devices.
 
-> **Why only 3 tables?** The training programs, habit definitions, warm-up protocol, and weekly-template defaults are *static content* bundled into the app (parsed from the PDF). Only your mutable state — profile, daily logs, check-ins — lives in the database, so nothing is duplicated. This is a deliberate simplification of the table list in the original brief.
+> **Why only 3 tables?** The training program, habit definitions, warm-up protocol, and weekly-template defaults are static content bundled into the app. Only mutable state (profile, daily logs, check-ins) lives in the database.
 
 ---
 
@@ -109,44 +109,31 @@ Auto-fills **steps, sleep, resting HR, weight, and calories burned** (and macros
 
 ## Using it day to day
 
-- **Today** is the screen you open every morning: the day's lift card (with the warm-up protocol, per-exercise sets/reps/RPE/rest/cues, substitutions, and demo videos), a basketball card if scheduled, your habit checklist grouped by category, and quick-entry for sleep / steps / RHR / weight. Check **Lift complete** + **Logged in Hevy ↗**, and **Hit protein ↗** bounces you to MyNetDiary.
+- **Today** is the screen you open every morning: the day's lift card (with the warm-up protocol, per-exercise sets/reps/RPE/rest/cues, substitutions, and demo videos), your habit checklist grouped by category, and quick-entry for sleep / steps / RHR / weight. The workout logger records weight, reps, and RPE per set and ends with **Finish workout**; the protein habit links out to MyNetDiary.
 - **Week** shows the 7-day grid with what's done/missed and your sleep + step averages vs. goals.
-- **Programs** is the read-only reference — browse any of the 12 lift weeks × 5 days, or basketball weeks 3–10.
+- **Programs** is the read-only reference: browse any of the 12 lift weeks × 5 days.
 - **Habits** shows current/longest streaks and a 30-day dot grid per habit, plus your overall perfect-day streak.
 - **Weekly check-in** (auto-surfaced on Sundays, also on the Week header) pre-fills your week's stats and captures one win / one friction / next week's focus.
 
 ### Editing the plan (all in **Settings**)
 
-- **Weekly training template** — pick which Nippard day-type lands on each weekday and toggle basketball per day.
+- **Weekly training template** — pick which program day-type lands on each weekday.
 - **Habits** — switch any core habit off, or turn on the advanced ones (sauna, red-light, meditation, RHR logging).
-- **Program timing** — lift Week-1 start date, cut dates, basketball start week, refeed day.
+- **Program timing** — lift Week-1 start date, cut dates, refeed day.
 - **Goals** — protein, calories, steps, sleep, weights.
 - **Appearance** — dark/light theme, timezone, rollover hour.
 
 ---
 
-## Re-seeding the lift program from the PDF
+## Lift program data
 
-The 12-week Nippard program is committed at `src/data/seed/liftProgram.ts`, generated by parsing `program-source/program2.pdf` with a vision-extraction pass (page image + embedded video links), an adversarial re-verification of low-confidence pages, and a focused second pass that corrected the RPE/technique/working-set columns. To regenerate from the workflow output:
+`src/data/seed/liftProgram.ts` holds a 12-week, 5-day program (60 days, 408 exercise entries) extracted from Jeff Nippard's *Bodybuilding Transformation System* PDF, which is not included in this repository. `scripts/buildLiftProgram.mjs` validates the extracted JSON (60 days, Week-1/Day-1 check) and regenerates the file:
 
 ```bash
-node scripts/buildLiftProgram.mjs <base-parse.json> <rpe-fix.json>
+node scripts/buildLiftProgram.mjs <base-parse.json> [<rpe-fix.json>]
 ```
 
-The script validates all 60 days, checks the Week-1/Day-1 ground truth, and prints a quality report before writing the file.
-
----
-
-## ⚠️ Where to spot-check the parse
-
-The data is high-fidelity (all 60 days, 408 exercises, internally consistent), but it was machine-read from a dense PDF, so give it a glance:
-
-- **The brief's "ground truth" was reversed.** The original build brief listed Week-1/Day-1 with the *substitution* exercises as if they were the primary lifts (e.g. it called the primary "45° Incline Machine Press" with "45° Incline Barbell Press" as the sub). The authoritative PDF is the opposite: **primary = 45° Incline Barbell Press**, subs = DB Press / Machine Press. Basecamp follows the **PDF**, since "fixing the parser to match the brief" would have corrupted the real program. If a lift looks swapped vs. your memory of the brief, the PDF is the source of truth.
-- **Deload weeks:** Week 1 *and* Week 6 are deload/intro weeks (sub-failure RPE, technique "N/A"). Every other week takes the last set to failure (last-set RPE shown as **10**, technique "Failure"/"Myo-reps"/etc.). This pattern is consistent across all 60 days — not a bug.
-- **`early_rpe: "N/A"`** appears on a few single-working-set isolation exercises (no "early" set to rate). Expected.
-- **Video links** are the exact YouTube URLs embedded in the PDF, matched to each exercise by name.
-
-If you ever spot a cell that looks off, the rendered source page is `program-source/program2.pdf` (Week _W_, Day _D_ is PDF page `3 + (W−1)×5 + D`).
+Week 1 and Week 6 are deload/intro weeks; from Week 2 on, the last set of each exercise goes to failure. If a cell looks wrong, the source page for Week W, Day D is PDF page `3 + (W−1)×5 + D`.
 
 ---
 
@@ -160,16 +147,21 @@ src/
     localProvider.ts    localStorage impl
     supabaseProvider.ts Supabase impl
     queries.ts          TanStack Query hooks
-    seed/               static content: profile, habits, warmup, liftProgram (generated), basketballProgram, links
+    seed/               static content: profile, habits, warmup, liftProgram (generated), links
   domain/
     schedule.ts         "assemble today" engine + progress
     streaks.ts          streak + perfect-day computation
     programs.ts         program accessors
-  components/           LiftCard, BasketballCard, HabitList, AppShell, ui primitives
+  components/           LiftCard, HabitList, WorkoutLogger, ReminderCards, AppShell, ui primitives
   screens/              Today, Week, Programs, Habits, CheckIn, Settings, Auth
-  lib/                  time (Denver tz + 3 AM rollover), supabase client, cn
+  lib/                  time (Denver tz + 3 AM rollover), supabase client, Google Health sync, cn
 supabase/schema.sql     tables + RLS
-scripts/buildLiftProgram.mjs   PDF-parse → seed generator
+scripts/buildLiftProgram.mjs   extracted JSON → seed generator
+api/google-token.js     serverless OAuth token proxy (Vercel)
+tests/                  Vitest unit tests
 ```
 
-Basecamp stores **no macro grams and no set-by-set weights** — by design. Those live in MyNetDiary and Hevy.
+
+## License
+
+[MIT](LICENSE) for the code. The lift-program content in `src/data/seed/liftProgram.ts` comes from Jeff Nippard's program and is not covered by this license.
