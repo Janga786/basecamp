@@ -69,7 +69,7 @@ export interface WarmupProtocol {
 
 export interface WeeklyTemplateDay {
   weekday: number // 0=Sun..6=Sat
-  lift_day_index: number | null // 1..5 (Nippard day) or null = rest/active recovery
+  lift_day_index: number | null // 1..5 (program day) or null = rest/active recovery
   label?: string // override label for rest days
 }
 

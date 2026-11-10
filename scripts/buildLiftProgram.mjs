@@ -1,5 +1,5 @@
-// Reads the parse-nippard-program workflow output (base), merges the focused
-// RPE/technique/working-sets re-extraction over it, validates, and emits
+// Reads a program JSON (base), merges an optional RPE/technique/working-sets
+// correction file over it, validates, and emits
 // src/data/seed/liftProgram.ts.
 // Run: node scripts/buildLiftProgram.mjs <base.json> [<rpe-fix.json>]
 import fs from 'node:fs'
@@ -113,13 +113,8 @@ const clean = days
 const header = `import type { WorkoutDay } from '../types'
 
 /**
- * Jeff Nippard "Bodybuilding Transformation System" — all 12 weeks × 5 day-types,
- * parsed from program-source/program2.pdf via the M2 vision-extraction workflow
- * (60 pages, adversarially re-verified). GENERATED FILE — do not hand-edit; rerun
- * scripts/buildLiftProgram.mjs to regenerate. Source of truth is the PDF.
- *
- * Parse note: the spec prompt's W1/D1 "ground truth" had the primary lifts and
- * their substitutions reversed; this data follows the authoritative PDF instead.
+ * Lift program: 12 weeks × 5 day-types. GENERATED FILE — do not hand-edit;
+ * rerun scripts/buildLiftProgram.mjs to regenerate.
  */
 export const LIFT_PROGRAM: WorkoutDay[] = ${JSON.stringify(clean, null, 2)}
 
