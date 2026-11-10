@@ -4,7 +4,7 @@ import { Stethoscope, X } from 'lucide-react'
 import { logicalDateStr, weekStartStr } from '@/lib/time'
 
 /**
- * Non-daily, dismissible reminder cards (§5b): shoulder eval + TMJ monitor.
+ * Non-daily, dismissible reminder cards (§5b), defined in seed/habits.ts.
  * Surfaced ~weekly (on Sundays) and dismissible for the current week.
  */
 export function ReminderCards({ weekday }: { weekday: number }) {

@@ -19,9 +19,9 @@ export const DEFAULT_WEEKLY_TEMPLATE: WeeklyTemplateDay[] = [
  * Dates default to the upcoming Monday (program start) as of the build date.
  */
 export const DEFAULT_PROFILE: Profile = {
-  height: `5'10"`,
-  current_weight: 175,
-  goal_weight: 163,
+  height: '',
+  current_weight: 0,
+  goal_weight: 0,
   cut_start_date: '2026-06-01',
   cut_length_weeks: 8,
   protein_target_g: 175,
