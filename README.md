@@ -127,13 +127,13 @@ Auto-fills **steps, sleep, resting HR, weight, and calories burned** (and macros
 
 ## Lift program data
 
-`src/data/seed/liftProgram.ts` holds a 12-week, 5-day program (60 days, 408 exercise entries) extracted from Jeff Nippard's *Bodybuilding Transformation System* PDF, which is not included in this repository. `scripts/buildLiftProgram.mjs` validates the extracted JSON (60 days, Week-1/Day-1 check) and regenerates the file:
+`src/data/seed/liftProgram.ts` and `src/data/seed/warmup.ts` contain a small generic **sample** program (12 weeks × 5 day-types, three exercises per day) so the app builds and runs. Replace them with your own program; `scripts/buildLiftProgram.mjs` validates a program JSON (60 days) and regenerates `liftProgram.ts`:
 
 ```bash
-node scripts/buildLiftProgram.mjs <base-parse.json> [<rpe-fix.json>]
+node scripts/buildLiftProgram.mjs <program.json> [<corrections.json>]
 ```
 
-Week 1 and Week 6 are deload/intro weeks; from Week 2 on, the last set of each exercise goes to failure. If a cell looks wrong, the source page for Week W, Day D is PDF page `3 + (W−1)×5 + D`.
+Profile defaults in `src/data/seed/profile.ts` are also sample values; edit them in Settings.
 
 ---
 
@@ -147,7 +147,7 @@ src/
     localProvider.ts    localStorage impl
     supabaseProvider.ts Supabase impl
     queries.ts          TanStack Query hooks
-    seed/               static content: profile, habits, warmup, liftProgram (generated), links
+    seed/               static content: profile, habits, warmup, liftProgram (sample data), links
   domain/
     schedule.ts         "assemble today" engine + progress
     streaks.ts          streak + perfect-day computation
@@ -164,4 +164,4 @@ tests/                  Vitest unit tests
 
 ## License
 
-[MIT](LICENSE) for the code. The lift-program content in `src/data/seed/liftProgram.ts` comes from Jeff Nippard's program and is not covered by this license.
+[MIT](LICENSE)
