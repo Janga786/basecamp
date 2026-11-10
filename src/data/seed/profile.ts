@@ -2,7 +2,7 @@ import type { Profile, WeeklyTemplateDay } from '../types'
 
 /**
  * Default weekly training template (§7). weekday: 0=Sun..6=Sat.
- * lift_day_index maps to the Nippard day-type (1 Upper, 2 Lower, 3 Pull, 4 Push, 5 Legs).
+ * lift_day_index maps to the program day-type (1 Upper, 2 Lower, 3 Pull, 4 Push, 5 Legs).
  */
 export const DEFAULT_WEEKLY_TEMPLATE: WeeklyTemplateDay[] = [
   { weekday: 1, lift_day_index: 1 }, // Mon  Upper
@@ -15,19 +15,18 @@ export const DEFAULT_WEEKLY_TEMPLATE: WeeklyTemplateDay[] = [
 ]
 
 /**
- * Seeded profile for the single user (§2). Everything is editable in Settings.
- * Dates default to the upcoming Monday (program start) as of the build date.
+ * Seeded profile (§2). All values are neutral SAMPLE defaults; edit them in Settings.
  */
 export const DEFAULT_PROFILE: Profile = {
-  height: '',
-  current_weight: 0,
-  goal_weight: 0,
+  height: `5'9"`,
+  current_weight: 180,
+  goal_weight: 170,
   cut_start_date: '2026-06-01',
   cut_length_weeks: 8,
-  protein_target_g: 175,
-  calorie_target: 2200,
-  step_goal: 9000,
-  sleep_goal_hours: 7.5,
+  protein_target_g: 150,
+  calorie_target: 2400,
+  step_goal: 8000,
+  sleep_goal_hours: 8,
   refeed_weekday: 6, // Saturday
   lift_start_date: '2026-06-01', // Week 1, Day 1 (Monday)
   settings: {

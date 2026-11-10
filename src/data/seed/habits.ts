@@ -13,7 +13,7 @@ export const HABITS: Habit[] = [
   {
     id: 'sleep-window',
     label: 'Hit my sleep window',
-    description: 'Target 7.5–8 hrs with a consistent bedtime/wake time. Log last night below.',
+    description: 'Aim for your sleep goal with a consistent bedtime/wake time. Log last night below.',
     category: 'sleep',
     cadence: 'daily',
     default_enabled: true,
@@ -70,7 +70,7 @@ export const HABITS: Habit[] = [
   },
   {
     id: 'protein-target',
-    label: 'Hit protein target (175 g+)',
+    label: 'Hit protein target',
     description: 'Log it in MyNetDiary — Basecamp only confirms you hit and logged it.',
     category: 'nutrition',
     cadence: 'daily',
