@@ -77,7 +77,7 @@ vercel --prod          # production
 
 Auto-fills **steps, sleep, resting HR, weight, and calories burned** (and macros/calories *in* if logged) into your daily log — Basecamp pulls them when you open the Today screen, so you stop typing them.
 
-> **Why Google?** Fitbit's legacy Web API is being shut down in **September 2026**, and new app registrations there are already closed. Fitbit data now flows through the **Google Health API** using **Google OAuth 2.0**. The browser runs the consent redirect (with PKCE); a serverless function ([`api/google-token.js`](api/google-token.js)) holds the client secret and performs the token exchange/refresh. Data reads hit `https://health.googleapis.com/v4/users/me/...` directly.
+> **Why Google?** Fitbit's legacy Web API was shut down in **September 2026**, and new app registrations there are already closed. Fitbit data now flows through the **Google Health API** using **Google OAuth 2.0**. The browser runs the consent redirect (with PKCE); a serverless function ([`api/google-token.js`](api/google-token.js)) holds the client secret and performs the token exchange/refresh. Data reads hit `https://health.googleapis.com/v4/users/me/...` directly.
 
 **One-time setup (~10 min):** follow [Set up Google Cloud and OAuth](https://developers.google.com/health/setup):
 
@@ -109,7 +109,7 @@ Auto-fills **steps, sleep, resting HR, weight, and calories burned** (and macros
 
 ## Using it day to day
 
-- **Today** is the screen you open every morning: the day's lift card (with the warm-up protocol, per-exercise sets/reps/RPE/rest/cues, substitutions, and demo videos), your habit checklist grouped by category, and quick-entry for sleep / steps / RHR / weight. The workout logger records weight, reps, and RPE per set and ends with **Finish workout**; the protein habit links out to MyNetDiary.
+- **Today** is the screen you open every morning: the day's lift card (with the warm-up protocol, per-exercise sets/reps/RPE/rest/cues, and substitutions), your habit checklist grouped by category, and quick-entry for sleep / steps / RHR / weight. The workout logger records weight, reps, and RPE per set and ends with **Finish workout**; the protein habit links out to MyNetDiary.
 - **Week** shows the 7-day grid with what's done/missed and your sleep + step averages vs. goals.
 - **Programs** is the read-only reference: browse any of the 12 lift weeks × 5 days.
 - **Habits** shows current/longest streaks and a 30-day dot grid per habit, plus your overall perfect-day streak.

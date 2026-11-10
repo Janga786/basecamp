@@ -31,7 +31,7 @@ describe('liftWeekFor', () => {
 })
 
 describe('assembleDay', () => {
-  it('schedules the right Nippard day from the weekly template', () => {
+  it('schedules the right program day from the weekly template', () => {
     const mon = assembleDay(profile, '2026-06-08') // Monday → Upper (day 1), week 2
     expect(mon.workout).not.toBeNull()
     expect(mon.workout!.week).toBe(2)
