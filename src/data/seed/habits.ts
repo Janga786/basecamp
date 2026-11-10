@@ -187,14 +187,5 @@ export const CATEGORY_LABEL: Record<Habit['category'], string> = {
 
 /** Non-daily, dismissible reminder cards (§5b) — surfaced ~weekly, not streak habits. */
 export const REMINDER_CARDS: ReminderCard[] = [
-  {
-    id: 'shoulder-check',
-    title: 'Shoulder check',
-    body: 'If AC-joint instability or crepitus isn’t improving with conservative rehab, book a sports-medicine evaluation.',
-  },
-  {
-    id: 'tmj-check',
-    title: 'TMJ monitor',
-    body: 'Keep an eye on the jaw clicking. If pain or locking develops, see a professional.',
-  },
+  // Add personal weekly reminder cards here: { id, title, body }.
 ]
